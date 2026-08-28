@@ -1,770 +1,576 @@
-<HTML>
-<HEAD>
-<!-- This HTML file has been created by texi2html 1.52a
-     from gettext.texi on 9 December 2003 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on January, 29 2026 by texi2html 1.78a -->
+<!--
+Written by: Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
 
-<TITLE>GNU gettext utilities - 8  Producing Binary MO Files</TITLE>
-</HEAD>
-<BODY>
-Go to the <A HREF="gettext_1.html">first</A>, <A HREF="gettext_7.html">previous</A>, <A HREF="gettext_9.html">next</A>, <A HREF="gettext_22.html">last</A> section, <A HREF="gettext_toc.html">table of contents</A>.
-<P><HR><P>
+-->
+<head>
+<title>GNU gettext utilities: 8. Pretranslating PO Files</title>
+
+<meta name="description" content="GNU gettext utilities: 8. Pretranslating PO Files">
+<meta name="keywords" content="GNU gettext utilities: 8. Pretranslating PO Files">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.78a">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
 
 
-<H1><A NAME="SEC133" HREF="gettext_toc.html#TOC133">8  Producing Binary MO Files</A></H1>
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="gettext_7.html#SEC68" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="gettext_9.html#SEC93" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="gettext_toc.html#SEC_Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="gettext_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="gettext_22.html#SEC453" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="gettext_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Pretranslating"></a>
+<a name="SEC78"></a>
+<h1 class="chapter"> <a href="gettext_toc.html#TOC74">8. Pretranslating PO Files</a> </h1>
+
+<p>As a translator,
+you may save yourself some work
+by starting from a reasonably good translation produced by a machine,
+and modify that translation, to make it perfect.
+</p>
+<p>Thus, before you start working on a translation,
+you might have the PO file <em>pretranslated</em>.
+</p>
+<p>This process, also called <em>machine translation</em>,
+is nowadays best performed through a Large Language Model (LLM).
+(See <a href="https://en.wikipedia.org/wiki/Machine_translation#Neural_MT">https://en.wikipedia.org/wiki/Machine_translation#Neural_MT</a>,
+<a href="https://en.wikipedia.org/wiki/Neural_machine_translation#Generative_LLMs">https://en.wikipedia.org/wiki/Neural_machine_translation#Generative_LLMs</a>.)
+</p>
+
+<a name="Installing-an-LLM"></a>
+<a name="SEC79"></a>
+<h2 class="section"> <a href="gettext_toc.html#TOC75">8.1 Installing a Large Language Model</a> </h2>
+
+<p>We don't recommend to use machine translation
+through a web service in the cloud, controlled by someone else than yourself.
+Such a machine translation service would be have major drawbacks
+(it could go away any time,
+it could be used to spy on you or manipulate you,
+or the costs could go up beyond your control);
+see <a href="https://www.gnu.org/philosophy/who-does-that-server-really-serve.en.html">https://www.gnu.org/philosophy/who-does-that-server-really-serve.en.html</a>.
+Additionally, such a service typically has some cost
+(between $10 and $25 per megabyte, as of 2025).
+</p>
+<p>Instead, we recommend a Large Language Model execution engine
+that runs on hardware under your control.
+This can be a desktop computer,
+or for instance a single-board computer in your local network.
+</p>
+<a name="IDX353"></a>
+<p>At this point (in 2025),
+a Large Language Model execution engine that is Free Software is
+&lsquo;<samp>ollama</samp>&rsquo;, that can be downloaded from <a href="https://ollama.com/">https://ollama.com/</a>.
+</p>
+<p>Next, you will need to pick a Large Language Model.
+There are two properties to watch out for:
+</p><ul>
+<li>
+The license under which the LLM is released.
+While some LLMs are under a Free Software license
+(most often the Apache 2.0 license)
+and are thus &ldquo;open weights&rdquo; models
+(see <a href="https://opensource.org/ai/open-weights">https://opensource.org/ai/open-weights</a>),
+others have licenses with usage restrictions.
+</li><li>
+The size of the LLM.
+Generally, it should be smaller than the available RAM size
+of your machine on which you will run the LLM execution engine.
+</li></ul>
+
+<p>Together with an LLM of reasonable quality,
+such as the model <code>ministral-3:14b</code>,
+the system requirements are as follows:
+</p><ul>
+<li>
+RAM: 16 GB.
+</li><li>
+Disk space: 10 GB (1 GB for <code>ollama</code>, 9 GB for the model).
+</li><li>
+GPU or TPU: A GPU (Graphics Processing Unit) or TPU (Tensor Processing Unit)
+is not needed.
+As of 2025, a high-end GPU from certain vendors
+can be used by <code>ollama</code> to provide an optional speedup.
+</li></ul>
+
+<p>Additional configuration:
+</p><ul>
+<li>
+If you are running <code>ollama</code> on your computer directly,
+no further configuration is needed.
+</li><li>
+If you are running <code>ollama</code> on a separate machine,
+and want to make it accessible from all machines in the LAN:
+Edit the file &lsquo;<tt>/etc/systemd/system/ollama.services</tt>&rsquo;,
+adding a line: <code>Environment=&quot;OLLAMA_HOST=0.0.0.0&quot;</code>.
+See <a href="https://github.com/ollama/ollama/issues/703">https://github.com/ollama/ollama/issues/703</a>.
+</li><li>
+If you are running <code>ollama</code> in a virtual machine,
+make the port 11434 accessible through port forwarding.
+</li></ul>
 
 
-
-<H2><A NAME="SEC134" HREF="gettext_toc.html#TOC134">8.1  Invoking the <CODE>msgfmt</CODE> Program</A></H2>
-
-<P>
-<A NAME="IDX853"></A>
-<A NAME="IDX854"></A>
-
-<PRE>
-msgfmt [<VAR>option</VAR>] <VAR>filename</VAR>.po ...
-</PRE>
-
-<P>
-<A NAME="IDX855"></A>
-The <CODE>msgfmt</CODE> programs generates a binary message catalog from a textual
-translation description.
-
-</P>
+<a name="msgpre-Invocation"></a>
+<a name="SEC80"></a>
+<h2 class="section"> <a href="gettext_toc.html#TOC76">8.2 Invoking the <code>msgpre</code> Program</a> </h2>
 
 
-<H3><A NAME="SEC135" HREF="gettext_toc.html#TOC135">8.1.1  Input file location</A></H3>
+<table><tr><td>&nbsp;</td><td><pre class="example">msgpre [<var>option</var>...]
+</pre></td></tr></table>
 
-<DL COMPACT>
+<a name="IDX354"></a>
+<a name="IDX355"></a>
+<p>The <code>msgpre</code> program pretranslates a translation catalog.
+</p>
+<p><strong>Warning:</strong> The pretranslations might not be what you expect.
+They might be of the wrong form, be of poor quality, or reflect some biases.
+</p>
 
-<DT><SAMP>`<VAR>filename</VAR>.po ...&acute;</SAMP>
-<DD>
-<DT><SAMP>`-D <VAR>directory</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--directory=<VAR>directory</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX856"></A>
-<A NAME="IDX857"></A>
-Add <VAR>directory</VAR> to the list of directories.  Source files are
-searched relative to this list of directories.  The resulting <TT>`.po&acute;</TT>
+<a name="SEC81"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC77">8.2.1 Input file location</a> </h3>
+
+<dl compact="compact">
+<dt> &lsquo;<samp>-i <var>inputfile</var></samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--input=<var>inputfile</var></samp>&rsquo;</dt>
+<dd><a name="IDX356"></a>
+<a name="IDX357"></a>
+<p>Input PO file.
+</p>
+</dd>
+<dt> &lsquo;<samp>-D <var>directory</var></samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--directory=<var>directory</var></samp>&rsquo;</dt>
+<dd><a name="IDX358"></a>
+<a name="IDX359"></a>
+<p>Add <var>directory</var> to the list of directories.  Source files are
+searched relative to this list of directories.  The resulting &lsquo;<tt>.po</tt>&rsquo;
 file will be written relative to the current directory, though.
+</p>
+</dd>
+</dl>
 
-</DL>
+<p>If no <var>inputfile</var> is given or if it is &lsquo;<samp>-</samp>&rsquo;, standard input is read.
+</p>
 
-<P>
-If an input file is <SAMP>`-&acute;</SAMP>, standard input is read.
+<a name="SEC82"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC78">8.2.2 Output file location</a> </h3>
 
-</P>
+<dl compact="compact">
+<dt> &lsquo;<samp>-o <var>file</var></samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--output-file=<var>file</var></samp>&rsquo;</dt>
+<dd><a name="IDX360"></a>
+<a name="IDX361"></a>
+<p>Write output to specified file.
+</p>
+</dd>
+</dl>
 
+<p>The results are written to standard output if no output file is specified
+or if it is &lsquo;<samp>-</samp>&rsquo;.
+</p>
 
-<H3><A NAME="SEC136" HREF="gettext_toc.html#TOC136">8.1.2  Operation mode</A></H3>
+<a name="SEC83"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC79">8.2.3 Message selection</a> </h3>
 
-<DL COMPACT>
-
-<DT><SAMP>`-j&acute;</SAMP>
-<DD>
-<DT><SAMP>`--java&acute;</SAMP>
-<DD>
-<A NAME="IDX858"></A>
-<A NAME="IDX859"></A>
-<A NAME="IDX860"></A>
-Java mode: generate a Java <CODE>ResourceBundle</CODE> class.
-
-<DT><SAMP>`--java2&acute;</SAMP>
-<DD>
-<A NAME="IDX861"></A>
-Like --java, and assume Java2 (JDK 1.2 or higher).
-
-<DT><SAMP>`--tcl&acute;</SAMP>
-<DD>
-<A NAME="IDX862"></A>
-<A NAME="IDX863"></A>
-Tcl mode: generate a tcl/msgcat <TT>`.msg&acute;</TT> file.
-
-<DT><SAMP>`--qt&acute;</SAMP>
-<DD>
-<A NAME="IDX864"></A>
-<A NAME="IDX865"></A>
-Qt mode: generate a Qt <TT>`.qm&acute;</TT> file.
-
-</DL>
+<dl compact="compact">
+<dt> &lsquo;<samp>--keep-fuzzy</samp>&rsquo;</dt>
+<dd><a name="IDX362"></a>
+<p>Keep fuzzy messages unmodified.
+Pretranslate only untranslated messages.
+</p>
+</dd>
+</dl>
 
 
+<a name="SEC84"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC80">8.2.4 Large Language Model (LLM) options</a> </h3>
 
-<H3><A NAME="SEC137" HREF="gettext_toc.html#TOC137">8.1.3  Output file location</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-o <VAR>file</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--output-file=<VAR>file</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX866"></A>
-<A NAME="IDX867"></A>
-Write output to specified file.
-
-<DT><SAMP>`--strict&acute;</SAMP>
-<DD>
-<A NAME="IDX868"></A>
-Direct the program to work strictly following the Uniforum/Sun
-implementation.  Currently this only affects the naming of the output
-file.  If this option is not given the name of the output file is the
-same as the domain name.  If the strict Uniforum mode is enabled the
-suffix <TT>`.mo&acute;</TT> is added to the file name if it is not already
-present.
-
-We find this behaviour of Sun's implementation rather silly and so by
-default this mode is <EM>not</EM> selected.
-
-</DL>
-
-<P>
-If the output <VAR>file</VAR> is <SAMP>`-&acute;</SAMP>, output is written to standard output.
-
-</P>
-
-
-<H3><A NAME="SEC138" HREF="gettext_toc.html#TOC138">8.1.4  Output file location in Java mode</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-r <VAR>resource</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--resource=<VAR>resource</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX869"></A>
-<A NAME="IDX870"></A>
-Specify the resource name.
-
-<DT><SAMP>`-l <VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--locale=<VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX871"></A>
-<A NAME="IDX872"></A>
-Specify the locale name, either a language specification of the form <VAR>ll</VAR>
-or a combined language and country specification of the form <VAR>ll_CC</VAR>.
-
-<DT><SAMP>`-d <VAR>directory</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX873"></A>
-Specify the base directory of classes directory hierarchy.
-
-</DL>
-
-<P>
-The class name is determined by appending the locale name to the resource name,
-separated with an underscore.  The <SAMP>`-d&acute;</SAMP> option is mandatory.  The class
-is written under the specified directory.
-
-</P>
+<dl compact="compact">
+<dt> &lsquo;<samp>--species=<var>type</var></samp>&rsquo;</dt>
+<dd><a name="IDX363"></a>
+<p>Specifies the type of Large Language Model execution engine.
+The default and only valid value is <code>ollama</code>.
+</p>
+</dd>
+<dt> &lsquo;<samp>--url=<var>url</var></samp>&rsquo;</dt>
+<dd><a name="IDX364"></a>
+<p>Specifies the URL of the server that runs Large Language Model execution engine.
+For <code>ollama</code>, the default is <code>http://localhost:11434</code>.
+</p>
+</dd>
+<dt> &lsquo;<samp>-m <var>model</var></samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--model=<var>model</var></samp>&rsquo;</dt>
+<dd><a name="IDX365"></a>
+<a name="IDX366"></a>
+<p>Specifies the model to use.
+This option is mandatory; no default exists.
+The specified model must
+already be installed in the Large Language Model execution engine.
+</p>
+</dd>
+<dt> &lsquo;<samp>--prompt=<var>text</var></samp>&rsquo;</dt>
+<dd><a name="IDX367"></a>
+<p>Specifies the prompt to use before each <code>msgid</code> from the PO file.
+It allows you to specify extra instructions for the LLM.
+The prompt should include an instruction like
+&quot;Translate into <var>target language</var>.&quot;.
+Some hints for good prompts are described in the article
+&ldquo;How to write AI prompts for translation&rdquo;
+<a href="https://poeditor.com/blog/ai-prompts-for-translation/">https://poeditor.com/blog/ai-prompts-for-translation/</a>.
+</p>
+</dd>
+<dt> &lsquo;<samp>--postprocess=<var>command</var></samp>&rsquo;</dt>
+<dd><a name="IDX368"></a>
+<p>Specifies a command to post-process the output from the LLM.
+This should be a Bourne shell command
+that reads from standard input and writes to standard output.
+</p>
+<p>For instance, the <code>ministral-3:14b</code> model
+often emphasizes part of the output with &lsquo;<samp>**</samp>&rsquo; characters.
+To eliminate these markers,
+you could use the command &lsquo;<samp>sed -e 's/[*][*]//g'</samp>&rsquo;.
+</p>
+</dd>
+</dl>
 
 
-<H3><A NAME="SEC139" HREF="gettext_toc.html#TOC139">8.1.5  Output file location in Tcl mode</A></H3>
+<a name="SEC85"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC81">8.2.5 Input file syntax</a> </h3>
 
-<DL COMPACT>
-
-<DT><SAMP>`-l <VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--locale=<VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX874"></A>
-<A NAME="IDX875"></A>
-Specify the locale name, either a language specification of the form <VAR>ll</VAR>
-or a combined language and country specification of the form <VAR>ll_CC</VAR>.
-
-<DT><SAMP>`-d <VAR>directory</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX876"></A>
-Specify the base directory of <TT>`.msg&acute;</TT> message catalogs.
-
-</DL>
-
-<P>
-The <SAMP>`-l&acute;</SAMP> and <SAMP>`-d&acute;</SAMP> options are mandatory.  The <TT>`.msg&acute;</TT> file is
-written in the specified directory.
-
-</P>
-
-
-<H3><A NAME="SEC140" HREF="gettext_toc.html#TOC140">8.1.6  Input file syntax</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-P&acute;</SAMP>
-<DD>
-<DT><SAMP>`--properties-input&acute;</SAMP>
-<DD>
-<A NAME="IDX877"></A>
-<A NAME="IDX878"></A>
-Assume the input files are Java ResourceBundles in Java <CODE>.properties</CODE>
+<dl compact="compact">
+<dt> &lsquo;<samp>-P</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--properties-input</samp>&rsquo;</dt>
+<dd><a name="IDX369"></a>
+<a name="IDX370"></a>
+<p>Assume the input file is a Java ResourceBundle in Java <code>.properties</code>
 syntax, not in PO file syntax.
-
-<DT><SAMP>`--stringtable-input&acute;</SAMP>
-<DD>
-<A NAME="IDX879"></A>
-Assume the input files are NeXTstep/GNUstep localized resource files in
-<CODE>.strings</CODE> syntax, not in PO file syntax.
-
-</DL>
-
-
-
-<H3><A NAME="SEC141" HREF="gettext_toc.html#TOC141">8.1.7  Input file interpretation</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-c&acute;</SAMP>
-<DD>
-<DT><SAMP>`--check&acute;</SAMP>
-<DD>
-<A NAME="IDX880"></A>
-<A NAME="IDX881"></A>
-Perform all the checks implied by <CODE>--check-format</CODE>, <CODE>--check-header</CODE>,
-<CODE>--check-domain</CODE>.
-
-<DT><SAMP>`--check-format&acute;</SAMP>
-<DD>
-<A NAME="IDX882"></A>
-<A NAME="IDX883"></A>
-Check language dependent format strings.
-
-If the string represents a format string used in a
-<CODE>printf</CODE>-like function both strings should have the same number of
-<SAMP>`%&acute;</SAMP> format specifiers, with matching types.  If the flag
-<CODE>c-format</CODE> or <CODE>possible-c-format</CODE> appears in the special
-comment <KBD>#,</KBD> for this entry a check is performed.  For example, the
-check will diagnose using <SAMP>`%.*s&acute;</SAMP> against <SAMP>`%s&acute;</SAMP>, or <SAMP>`%d&acute;</SAMP>
-against <SAMP>`%s&acute;</SAMP>, or <SAMP>`%d&acute;</SAMP> against <SAMP>`%x&acute;</SAMP>.  It can even handle
-positional parameters.
-
-Normally the <CODE>xgettext</CODE> program automatically decides whether a
-string is a format string or not.  This algorithm is not perfect,
-though.  It might regard a string as a format string though it is not
-used in a <CODE>printf</CODE>-like function and so <CODE>msgfmt</CODE> might report
-errors where there are none.
-
-To solve this problem the programmer can dictate the decision to the
-<CODE>xgettext</CODE> program (see section <A HREF="gettext_13.html#SEC221">13.3.1  C Format Strings</A>).  The translator should not
-consider removing the flag from the <KBD>#,</KBD> line.  This "fix" would be
-reversed again as soon as <CODE>msgmerge</CODE> is called the next time.
-
-<DT><SAMP>`--check-header&acute;</SAMP>
-<DD>
-<A NAME="IDX884"></A>
-Verify presence and contents of the header entry.  See section <A HREF="gettext_5.html#SEC38">5.2  Filling in the Header Entry</A>,
-for a description of the various fields in the header entry.
-
-<DT><SAMP>`--check-domain&acute;</SAMP>
-<DD>
-<A NAME="IDX885"></A>
-Check for conflicts between domain directives and the <CODE>--output-file</CODE>
-option
-
-<DT><SAMP>`-C&acute;</SAMP>
-<DD>
-<DT><SAMP>`--check-compatibility&acute;</SAMP>
-<DD>
-<A NAME="IDX886"></A>
-<A NAME="IDX887"></A>
-<A NAME="IDX888"></A>
-Check that GNU msgfmt behaves like X/Open msgfmt.  This will give an error
-when attempting to use the GNU extensions.
-
-<DT><SAMP>`--check-accelerators[=<VAR>char</VAR>]&acute;</SAMP>
-<DD>
-<A NAME="IDX889"></A>
-<A NAME="IDX890"></A>
-<A NAME="IDX891"></A>
-<A NAME="IDX892"></A>
-Check presence of keyboard accelerators for menu items.  This is based on
-the convention used in some GUIs that a keyboard accelerator in a menu
-item string is designated by an immediately preceding <SAMP>`&#38;&acute;</SAMP> character.
-Sometimes a keyboard accelerator is also called "keyboard mnemonic".
-This check verifies that if the untranslated string has exactly one
-<SAMP>`&#38;&acute;</SAMP> character, the translated string has exactly one <SAMP>`&#38;&acute;</SAMP> as well.
-If this option is given with a <VAR>char</VAR> argument, this <VAR>char</VAR> should
-be a non-alphanumeric character and is used as keyboard acceleator mark
-instead of <SAMP>`&#38;&acute;</SAMP>.
-
-<DT><SAMP>`-f&acute;</SAMP>
-<DD>
-<DT><SAMP>`--use-fuzzy&acute;</SAMP>
-<DD>
-<A NAME="IDX893"></A>
-<A NAME="IDX894"></A>
-<A NAME="IDX895"></A>
-Use fuzzy entries in output.  Note that using this option is usually wrong,
-because fuzzy messages are exactly those which have not been validated by
-a human translator.
-
-</DL>
-
-
-
-<H3><A NAME="SEC142" HREF="gettext_toc.html#TOC142">8.1.8  Output details</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-a <VAR>number</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--alignment=<VAR>number</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX896"></A>
-<A NAME="IDX897"></A>
-Align strings to <VAR>number</VAR> bytes (default: 1).
-
-<DT><SAMP>`--no-hash&acute;</SAMP>
-<DD>
-<A NAME="IDX898"></A>
-Don't include a hash table in the binary file.  Lookup will be more expensive
-at run time (binary search instead of hash table lookup).
-
-</DL>
-
-
-
-<H3><A NAME="SEC143" HREF="gettext_toc.html#TOC143">8.1.9  Informative output</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-h&acute;</SAMP>
-<DD>
-<DT><SAMP>`--help&acute;</SAMP>
-<DD>
-<A NAME="IDX899"></A>
-<A NAME="IDX900"></A>
-Display this help and exit.
-
-<DT><SAMP>`-V&acute;</SAMP>
-<DD>
-<DT><SAMP>`--version&acute;</SAMP>
-<DD>
-<A NAME="IDX901"></A>
-<A NAME="IDX902"></A>
-Output version information and exit.
-
-<DT><SAMP>`--statistics&acute;</SAMP>
-<DD>
-<A NAME="IDX903"></A>
-Print statistics about translations.
-
-<DT><SAMP>`-v&acute;</SAMP>
-<DD>
-<DT><SAMP>`--verbose&acute;</SAMP>
-<DD>
-<A NAME="IDX904"></A>
-<A NAME="IDX905"></A>
-Increase verbosity level.
-
-</DL>
-
-
-
-<H2><A NAME="SEC144" HREF="gettext_toc.html#TOC144">8.2  Invoking the <CODE>msgunfmt</CODE> Program</A></H2>
-
-<P>
-<A NAME="IDX906"></A>
-<A NAME="IDX907"></A>
-
-<PRE>
-msgunfmt [<VAR>option</VAR>] [<VAR>file</VAR>]...
-</PRE>
-
-<P>
-<A NAME="IDX908"></A>
-The <CODE>msgunfmt</CODE> program converts a binary message catalog to a
-Uniforum style .po file.
-
-</P>
-
-
-<H3><A NAME="SEC145" HREF="gettext_toc.html#TOC145">8.2.1  Operation mode</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-j&acute;</SAMP>
-<DD>
-<DT><SAMP>`--java&acute;</SAMP>
-<DD>
-<A NAME="IDX909"></A>
-<A NAME="IDX910"></A>
-<A NAME="IDX911"></A>
-Java mode: input is a Java <CODE>ResourceBundle</CODE> class.
-
-<DT><SAMP>`--tcl&acute;</SAMP>
-<DD>
-<A NAME="IDX912"></A>
-<A NAME="IDX913"></A>
-Tcl mode: input is a tcl/msgcat <TT>`.msg&acute;</TT> file.
-
-</DL>
-
-
-
-<H3><A NAME="SEC146" HREF="gettext_toc.html#TOC146">8.2.2  Input file location</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`<VAR>file</VAR> ...&acute;</SAMP>
-<DD>
-Input .mo files.
-
-</DL>
-
-<P>
-If no input <VAR>file</VAR> is given or if it is <SAMP>`-&acute;</SAMP>, standard input is read.
-
-</P>
-
-
-<H3><A NAME="SEC147" HREF="gettext_toc.html#TOC147">8.2.3  Input file location in Java mode</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-r <VAR>resource</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--resource=<VAR>resource</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX914"></A>
-<A NAME="IDX915"></A>
-Specify the resource name.
-
-<DT><SAMP>`-l <VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--locale=<VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX916"></A>
-<A NAME="IDX917"></A>
-Specify the locale name, either a language specification of the form <VAR>ll</VAR>
-or a combined language and country specification of the form <VAR>ll_CC</VAR>.
-
-</DL>
-
-<P>
-The class name is determined by appending the locale name to the resource name,
-separated with an underscore.  The class is located using the <CODE>CLASSPATH</CODE>.
-
-</P>
-
-
-<H3><A NAME="SEC148" HREF="gettext_toc.html#TOC148">8.2.4  Input file location in Tcl mode</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-l <VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--locale=<VAR>locale</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX918"></A>
-<A NAME="IDX919"></A>
-Specify the locale name, either a language specification of the form <VAR>ll</VAR>
-or a combined language and country specification of the form <VAR>ll_CC</VAR>.
-
-<DT><SAMP>`-d <VAR>directory</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX920"></A>
-Specify the base directory of <TT>`.msg&acute;</TT> message catalogs.
-
-</DL>
-
-<P>
-The <SAMP>`-l&acute;</SAMP> and <SAMP>`-d&acute;</SAMP> options are mandatory.  The <TT>`.msg&acute;</TT> file is
-located in the specified directory.
-
-</P>
-
-
-<H3><A NAME="SEC149" HREF="gettext_toc.html#TOC149">8.2.5  Output file location</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-o <VAR>file</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--output-file=<VAR>file</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX921"></A>
-<A NAME="IDX922"></A>
-Write output to specified file.
-
-</DL>
-
-<P>
-The results are written to standard output if no output file is specified
-or if it is <SAMP>`-&acute;</SAMP>.
-
-</P>
-
-
-<H3><A NAME="SEC150" HREF="gettext_toc.html#TOC150">8.2.6  Output details</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`--force-po&acute;</SAMP>
-<DD>
-<A NAME="IDX923"></A>
-Always write an output file even if it contains no message.
-
-<DT><SAMP>`-i&acute;</SAMP>
-<DD>
-<DT><SAMP>`--indent&acute;</SAMP>
-<DD>
-<A NAME="IDX924"></A>
-<A NAME="IDX925"></A>
-Write the .po file using indented style.
-
-<DT><SAMP>`--strict&acute;</SAMP>
-<DD>
-<A NAME="IDX926"></A>
-Write out a strict Uniforum conforming PO file.  Note that this
+</p>
+</dd>
+<dt> &lsquo;<samp>--stringtable-input</samp>&rsquo;</dt>
+<dd><a name="IDX371"></a>
+<p>Assume the input file is a NeXTstep/GNUstep localized resource file in
+<code>.strings</code> syntax, not in PO file syntax.
+</p>
+</dd>
+</dl>
+
+
+<a name="SEC86"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC82">8.2.6 Output details</a> </h3>
+
+<dl compact="compact">
+<dt> &lsquo;<samp>--color</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--color=<var>when</var></samp>&rsquo;</dt>
+<dd><a name="IDX372"></a>
+<p>Specify whether or when to use colors and other text attributes.
+See <a href="gettext_10.html#SEC193">The <code>--color</code> option</a> for details.
+</p>
+</dd>
+<dt> &lsquo;<samp>--style=<var>style_file</var></samp>&rsquo;</dt>
+<dd><a name="IDX373"></a>
+<p>Specify the CSS style rule file to use for <code>--color</code>.
+See <a href="gettext_10.html#SEC195">The <code>--style</code> option</a> for details.
+</p>
+</dd>
+<dt> &lsquo;<samp>--force-po</samp>&rsquo;</dt>
+<dd><a name="IDX374"></a>
+<p>Always write an output file even if it contains no message.
+</p>
+</dd>
+<dt> &lsquo;<samp>--indent</samp>&rsquo;</dt>
+<dd><a name="IDX375"></a>
+<p>Write the .po file using indented style.
+</p>
+</dd>
+<dt> &lsquo;<samp>--no-location</samp>&rsquo;</dt>
+<dd><a name="IDX376"></a>
+<p>Do not write &lsquo;<samp>#: <var>filename</var>:<var>line</var></samp>&rsquo; lines.
+</p>
+</dd>
+<dt> &lsquo;<samp>-n</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--add-location=<var>type</var></samp>&rsquo;</dt>
+<dd><a name="IDX377"></a>
+<p>Generate &lsquo;<samp>#: <var>filename</var>:<var>line</var></samp>&rsquo; lines (default).
+</p>
+<p>The optional <var>type</var> can be either &lsquo;<samp>full</samp>&rsquo;, &lsquo;<samp>file</samp>&rsquo;, or
+&lsquo;<samp>never</samp>&rsquo;.  If it is not given or &lsquo;<samp>full</samp>&rsquo;, it generates the
+lines with both file name and line number.  If it is &lsquo;<samp>file</samp>&rsquo;, the
+line number part is omitted.  If it is &lsquo;<samp>never</samp>&rsquo;, it completely
+suppresses the lines (same as <code>--no-location</code>).
+</p>
+</dd>
+<dt> &lsquo;<samp>--strict</samp>&rsquo;</dt>
+<dd><a name="IDX378"></a>
+<p>Write out a strict Uniforum conforming PO file.  Note that this
 Uniforum format should be avoided because it doesn't support the
 GNU extensions.
-
-<DT><SAMP>`-p&acute;</SAMP>
-<DD>
-<DT><SAMP>`--properties-output&acute;</SAMP>
-<DD>
-<A NAME="IDX927"></A>
-<A NAME="IDX928"></A>
-Write out a Java ResourceBundle in Java <CODE>.properties</CODE> syntax.  Note
+</p>
+</dd>
+<dt> &lsquo;<samp>-p</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--properties-output</samp>&rsquo;</dt>
+<dd><a name="IDX379"></a>
+<a name="IDX380"></a>
+<p>Write out a Java ResourceBundle in Java <code>.properties</code> syntax.  Note
 that this file format doesn't support plural forms and silently drops
 obsolete messages.
-
-<DT><SAMP>`--stringtable-output&acute;</SAMP>
-<DD>
-<A NAME="IDX929"></A>
-Write out a NeXTstep/GNUstep localized resource file in <CODE>.strings</CODE> syntax.
+</p>
+</dd>
+<dt> &lsquo;<samp>--stringtable-output</samp>&rsquo;</dt>
+<dd><a name="IDX381"></a>
+<p>Write out a NeXTstep/GNUstep localized resource file in <code>.strings</code> syntax.
 Note that this file format doesn't support plural forms.
-
-<DT><SAMP>`-w <VAR>number</VAR>&acute;</SAMP>
-<DD>
-<DT><SAMP>`--width=<VAR>number</VAR>&acute;</SAMP>
-<DD>
-<A NAME="IDX930"></A>
-<A NAME="IDX931"></A>
-Set the output page width.  Long strings in the output files will be
+</p>
+</dd>
+<dt> &lsquo;<samp>-w <var>number</var></samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--width=<var>number</var></samp>&rsquo;</dt>
+<dd><a name="IDX382"></a>
+<a name="IDX383"></a>
+<p>Set the output page width.  Long strings in the output files will be
 split across multiple lines in order to ensure that each line's width
-(= number of screen columns) is less or equal to the given <VAR>number</VAR>.
-
-<DT><SAMP>`--no-wrap&acute;</SAMP>
-<DD>
-<A NAME="IDX932"></A>
-Do not break long message lines.  Message lines whose width exceeds the
+(= number of screen columns) is less or equal to the given <var>number</var>.
+</p>
+</dd>
+<dt> &lsquo;<samp>--no-wrap</samp>&rsquo;</dt>
+<dd><a name="IDX384"></a>
+<p>Do not break long message lines.  Message lines whose width exceeds the
 output page width will not be split into several lines.  Only file reference
 lines which are wider than the output page width will be split.
-
-<DT><SAMP>`-s&acute;</SAMP>
-<DD>
-<DT><SAMP>`--sort-output&acute;</SAMP>
-<DD>
-<A NAME="IDX933"></A>
-<A NAME="IDX934"></A>
-<A NAME="IDX935"></A>
-Generate sorted output.  Note that using this option makes it much harder
+</p>
+</dd>
+<dt> &lsquo;<samp>-s</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--sort-output</samp>&rsquo;</dt>
+<dd><a name="IDX385"></a>
+<a name="IDX386"></a>
+<p>Generate sorted output.  Note that using this option makes it much harder
 for the translator to understand each message's context.
-
-</DL>
-
-
-
-<H3><A NAME="SEC151" HREF="gettext_toc.html#TOC151">8.2.7  Informative output</A></H3>
-
-<DL COMPACT>
-
-<DT><SAMP>`-h&acute;</SAMP>
-<DD>
-<DT><SAMP>`--help&acute;</SAMP>
-<DD>
-<A NAME="IDX936"></A>
-<A NAME="IDX937"></A>
-Display this help and exit.
-
-<DT><SAMP>`-V&acute;</SAMP>
-<DD>
-<DT><SAMP>`--version&acute;</SAMP>
-<DD>
-<A NAME="IDX938"></A>
-<A NAME="IDX939"></A>
-Output version information and exit.
-
-<DT><SAMP>`-v&acute;</SAMP>
-<DD>
-<DT><SAMP>`--verbose&acute;</SAMP>
-<DD>
-<A NAME="IDX940"></A>
-<A NAME="IDX941"></A>
-Increase verbosity level.
-
-</DL>
+</p>
+</dd>
+<dt> &lsquo;<samp>-F</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--sort-by-file</samp>&rsquo;</dt>
+<dd><a name="IDX387"></a>
+<a name="IDX388"></a>
+<p>Sort output by file location.
+</p>
+</dd>
+</dl>
 
 
+<a name="SEC87"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC83">8.2.7 Informative output</a> </h3>
 
-<H2><A NAME="SEC152" HREF="gettext_toc.html#TOC152">8.3  The Format of GNU MO Files</A></H2>
-<P>
-<A NAME="IDX942"></A>
-<A NAME="IDX943"></A>
+<dl compact="compact">
+<dt> &lsquo;<samp>-h</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--help</samp>&rsquo;</dt>
+<dd><a name="IDX389"></a>
+<a name="IDX390"></a>
+<p>Display this help and exit.
+</p>
+</dd>
+<dt> &lsquo;<samp>-V</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--version</samp>&rsquo;</dt>
+<dd><a name="IDX391"></a>
+<a name="IDX392"></a>
+<p>Output version information and exit.
+</p>
+</dd>
+<dt> &lsquo;<samp>-q</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--quiet</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--silent</samp>&rsquo;</dt>
+<dd><a name="IDX393"></a>
+<a name="IDX394"></a>
+<a name="IDX395"></a>
+<p>Suppress progress indicators.
+</p>
+</dd>
+</dl>
 
-</P>
-<P>
-The format of the generated MO files is best described by a picture,
-which appears below.
 
-</P>
-<P>
-<A NAME="IDX944"></A>
-The first two words serve the identification of the file.  The magic
-number will always signal GNU MO files.  The number is stored in the
-byte order of the generating machine, so the magic number really is
-two numbers: <CODE>0x950412de</CODE> and <CODE>0xde120495</CODE>.  The second
-word describes the current revision of the file format.  For now the
-revision is 0.  This might change in future versions, and ensures
-that the readers of MO files can distinguish new formats from old
-ones, so that both can be handled correctly.  The version is kept
-separate from the magic number, instead of using different magic
-numbers for different formats, mainly because <TT>`/etc/magic&acute;</TT> is
-not updated often.  It might be better to have magic separated from
-internal format version identification.
+<a name="SEC88"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC84">8.2.8 Examples</a> </h3>
 
-</P>
-<P>
-Follow a number of pointers to later tables in the file, allowing
-for the extension of the prefix part of MO files without having to
-recompile programs reading them.  This might become useful for later
-inserting a few flag bits, indication about the charset used, new
-tables, or other things.
+<p>To pretranslate the file <code>foo.po</code>:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">msgpre --model=ministral-3:14b &lt; foo.po &gt; foo-pretranslated.po
+</pre></td></tr></table>
 
-</P>
-<P>
-Then, at offset <VAR>O</VAR> and offset <VAR>T</VAR> in the picture, two tables
-of string descriptors can be found.  In both tables, each string
-descriptor uses two 32 bits integers, one for the string length,
-another for the offset of the string in the MO file, counting in bytes
-from the start of the file.  The first table contains descriptors
-for the original strings, and is sorted so the original strings
-are in increasing lexicographical order.  The second table contains
-descriptors for the translated strings, and is parallel to the first
-table: to find the corresponding translation one has to access the
-array slot in the second array with the same index.
+<p>Note that this command can take a long time,
+depending on the model and the available hardware.
+</p>
 
-</P>
-<P>
-Having the original strings sorted enables the use of simple binary
-search, for when the MO file does not contain an hashing table, or
-for when it is not practical to use the hashing table provided in
-the MO file.  This also has another advantage, as the empty string
-in a PO file GNU <CODE>gettext</CODE> is usually <EM>translated</EM> into
-some system information attached to that particular MO file, and the
-empty string necessarily becomes the first in both the original and
-translated tables, making the system information very easy to find.
+<a name="spit-Invocation"></a>
+<a name="SEC89"></a>
+<h2 class="section"> <a href="gettext_toc.html#TOC85">8.3 Invoking the <code>spit</code> Program</a> </h2>
 
-</P>
-<P>
-<A NAME="IDX945"></A>
-The size <VAR>S</VAR> of the hash table can be zero.  In this case, the
-hash table itself is not contained in the MO file.  Some people might
-prefer this because a precomputed hashing table takes disk space, and
-does not win <EM>that</EM> much speed.  The hash table contains indices
-to the sorted array of strings in the MO file.  Conflict resolution is
-done by double hashing.  The precise hashing algorithm used is fairly
-dependent on GNU <CODE>gettext</CODE> code, and is not documented here.
 
-</P>
-<P>
-As for the strings themselves, they follow the hash file, and each
-is terminated with a <KBD>NUL</KBD>, and this <KBD>NUL</KBD> is not counted in
-the length which appears in the string descriptor.  The <CODE>msgfmt</CODE>
-program has an option selecting the alignment for MO file strings.
-With this option, each string is separately aligned so it starts at
-an offset which is a multiple of the alignment value.  On some RISC
-machines, a correct alignment will speed things up.
+<table><tr><td>&nbsp;</td><td><pre class="example">spit [<var>option</var>...]
+</pre></td></tr></table>
 
-</P>
-<P>
-<A NAME="IDX946"></A>
-Plural forms are stored by letting the plural of the original string
-follow the singular of the original string, separated through a
-<KBD>NUL</KBD> byte.  The length which appears in the string descriptor
-includes both.  However, only the singular of the original string
-takes part in the hash table lookup.  The plural variants of the
-translation are all stored consecutively, separated through a
-<KBD>NUL</KBD> byte.  Here also, the length in the string descriptor
-includes all of them.
+<a name="IDX396"></a>
+<a name="IDX397"></a>
+<p>The <code>spit</code> program
+passes its input to a Large Language Model (LLM) instance
+and prints the response.
+With the <code>--to</code> option,
+it translates its input to the specified language
+through a Large Language Model (LLM) and prints the translation.
+</p>
+<p><strong>Warning:</strong> The output might not be what you expect.
+It might be of the wrong form, be of poor quality, or reflect some biases.
+</p>
 
-</P>
-<P>
-Nothing prevents a MO file from having embedded <KBD>NUL</KBD>s in strings.
-However, the program interface currently used already presumes
-that strings are <KBD>NUL</KBD> terminated, so embedded <KBD>NUL</KBD>s are
-somewhat useless.  But the MO file format is general enough so other
-interfaces would be later possible, if for example, we ever want to
-implement wide characters right in MO files, where <KBD>NUL</KBD> bytes may
-accidently appear.  (No, we don't want to have wide characters in MO
-files.  They would make the file unnecessarily large, and the
-<SAMP>`wchar_t&acute;</SAMP> type being platform dependent, MO files would be
-platform dependent as well.)
+<a name="SEC90"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC86">8.3.1 Large Language Model (LLM) options</a> </h3>
 
-</P>
-<P>
-This particular issue has been strongly debated in the GNU
-<CODE>gettext</CODE> development forum, and it is expectable that MO file
-format will evolve or change over time.  It is even possible that many
-formats may later be supported concurrently.  But surely, we have to
-start somewhere, and the MO file format described here is a good start.
-Nothing is cast in concrete, and the format may later evolve fairly
-easily, so we should feel comfortable with the current approach.
+<dl compact="compact">
+<dt> &lsquo;<samp>--species=<var>type</var></samp>&rsquo;</dt>
+<dd><a name="IDX398"></a>
+<p>Specifies the type of Large Language Model execution engine.
+The default and only valid value is <code>ollama</code>.
+</p>
+</dd>
+<dt> &lsquo;<samp>--url=<var>url</var></samp>&rsquo;</dt>
+<dd><a name="IDX399"></a>
+<p>Specifies the URL of the server that runs Large Language Model execution engine.
+For <code>ollama</code>, the default is <code>http://localhost:11434</code>.
+</p>
+</dd>
+<dt> &lsquo;<samp>-m <var>model</var></samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--model=<var>model</var></samp>&rsquo;</dt>
+<dd><a name="IDX400"></a>
+<a name="IDX401"></a>
+<p>Specifies the model to use.
+This option is mandatory; no default exists.
+The specified model must
+already be installed in the Large Language Model execution engine.
+</p>
+</dd>
+<dt> &lsquo;<samp>--to=<var>language</var></samp>&rsquo;</dt>
+<dd><a name="IDX402"></a>
+<p>Specifies the target language.
+<var>language</var> may be specified
+as an ISO 639 language code (such as <code>fr</code> for French),
+as a combination of an ISO 639 language code and an ISO 3166 country code
+(such as <code>fr_CA</code> for French in Canada,
+or <code>zh_TW</code> for traditional Chinese),
+or as the English name of a language (such as <code>French</code>).
+</p>
+<p>The effect of this option is to
+add a prompt similar to &quot;Translate to <var>language</var>:&quot;.
+</p>
+</dd>
+<dt> &lsquo;<samp>--prompt=<var>text</var></samp>&rsquo;</dt>
+<dd><a name="IDX403"></a>
+<p>Specifies the prompt to use before the input that comes from standard input.
+It allows you to specify extra instructions for the LLM.
+</p>
+<p>This option overrides the <code>--to</code> option.
+</p>
+</dd>
+<dt> &lsquo;<samp>--postprocess=<var>command</var></samp>&rsquo;</dt>
+<dd><a name="IDX404"></a>
+<p>Specifies a command to post-process the output.
+This should be a Bourne shell command
+that reads from standard input and writes to standard output.
+</p>
+<p>For instance, the <code>ministral-3:14b</code> model
+often emphasizes part of the output with &lsquo;<samp>**</samp>&rsquo; characters.
+To eliminate these markers,
+you could use the command &lsquo;<samp>sed -e 's/[*][*]//g'</samp>&rsquo;.
+</p>
+</dd>
+</dl>
 
-</P>
 
-<PRE>
-        byte
-             +------------------------------------------+
-          0  | magic number = 0x950412de                |
-             |                                          |
-          4  | file format revision = 0                 |
-             |                                          |
-          8  | number of strings                        |  == N
-             |                                          |
-         12  | offset of table with original strings    |  == O
-             |                                          |
-         16  | offset of table with translation strings |  == T
-             |                                          |
-         20  | size of hashing table                    |  == S
-             |                                          |
-         24  | offset of hashing table                  |  == H
-             |                                          |
-             .                                          .
-             .    (possibly more entries later)         .
-             .                                          .
-             |                                          |
-          O  | length &#38; offset 0th string  ----------------.
-      O + 8  | length &#38; offset 1st string  ------------------.
-              ...                                    ...   | |
-O + ((N-1)*8)| length &#38; offset (N-1)th string           |  | |
-             |                                          |  | |
-          T  | length &#38; offset 0th translation  ---------------.
-      T + 8  | length &#38; offset 1st translation  -----------------.
-              ...                                    ...   | | | |
-T + ((N-1)*8)| length &#38; offset (N-1)th translation      |  | | | |
-             |                                          |  | | | |
-          H  | start hash table                         |  | | | |
-              ...                                    ...   | | | |
-  H + S * 4  | end hash table                           |  | | | |
-             |                                          |  | | | |
-             | NUL terminated 0th string  &#60;----------------' | | |
-             |                                          |    | | |
-             | NUL terminated 1st string  &#60;------------------' | |
-             |                                          |      | |
-              ...                                    ...       | |
-             |                                          |      | |
-             | NUL terminated 0th translation  &#60;---------------' |
-             |                                          |        |
-             | NUL terminated 1st translation  &#60;-----------------'
-             |                                          |
-              ...                                    ...
-             |                                          |
-             +------------------------------------------+
-</PRE>
+<a name="SEC91"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC87">8.3.2 Informative output</a> </h3>
 
-<P><HR><P>
-Go to the <A HREF="gettext_1.html">first</A>, <A HREF="gettext_7.html">previous</A>, <A HREF="gettext_9.html">next</A>, <A HREF="gettext_22.html">last</A> section, <A HREF="gettext_toc.html">table of contents</A>.
-</BODY>
-</HTML>
+<dl compact="compact">
+<dt> &lsquo;<samp>-h</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--help</samp>&rsquo;</dt>
+<dd><a name="IDX405"></a>
+<a name="IDX406"></a>
+<p>Display this help and exit.
+</p>
+</dd>
+<dt> &lsquo;<samp>-V</samp>&rsquo;</dt>
+<dt> &lsquo;<samp>--version</samp>&rsquo;</dt>
+<dd><a name="IDX407"></a>
+<a name="IDX408"></a>
+<p>Output version information and exit.
+</p>
+</dd>
+</dl>
+
+
+<a name="SEC92"></a>
+<h3 class="subsection"> <a href="gettext_toc.html#TOC88">8.3.3 Examples</a> </h3>
+
+<p>Machine translation of a single sentence:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">$ echo 'Translate into German: &quot;Welcome to the GNU project!&quot;' \
+    | spit --model=ministral-3:14b \
+           --postprocess=&quot;sed -e 's/[*][*]//g'&quot;
+&quot;Willkommen zum GNU-Projekt!&quot;
+</pre></td></tr></table>
+
+<p>The perfect translation would be <code>&quot;Willkommen beim GNU-Projekt!&quot;</code>.
+You can see: some manual adjustment after the machine translation is needed.
+</p>
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#SEC78" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="gettext_9.html#SEC93" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="gettext_toc.html#SEC_Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="gettext_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="gettext_22.html#SEC453" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="gettext_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>Bruno Haible</em> on <em>January, 29 2026</em> using <a href="https://www.nongnu.org/texi2html/"><em>texi2html 1.78a</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

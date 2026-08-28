@@ -1,10 +1,10 @@
 # Reading tcl/msgcat .msg files.
-# Copyright (C) 2002 Free Software Foundation, Inc.
+# Copyright (C) 2002-2026 Free Software Foundation, Inc.
 #
-# This program is free software; you can redistribute it and/or modify
+# This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,9 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation,
-# Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Written by Bruno Haible.
 
 namespace eval msgcat {
   namespace export mcset mcdump
@@ -58,7 +59,7 @@ proc msgcat::mcdump {langfile} {
     # msgunfmt expects the output in UTF-8 encoding.
     fconfigure stdout -encoding utf-8
 
-    set msgcat::header ""
+    set ::msgcat::header ""
 
     set fd [open $langfile r]
     # In newer tcl versions, the .msg files are in UTF-8 encoding.
@@ -66,11 +67,11 @@ proc msgcat::mcdump {langfile} {
     eval [read $fd]
     close $fd
 
-    if {$msgcat::header == ""} {
+    if {$::msgcat::header == ""} {
       # Provide a minimal header.
-      set msgcat::header [subst "MIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n"]
+      set ::msgcat::header [subst "MIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n"]
     }
-    msgcat::write_po_message "" $msgcat::header
+    msgcat::write_po_message "" $::msgcat::header
   } else {
     # Tell msgunfmt to emit an internationalized error message.
     exit 2
